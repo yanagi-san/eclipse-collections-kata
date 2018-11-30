@@ -13,7 +13,6 @@ package org.eclipse.collections.candykata;
 import org.eclipse.collections.api.bag.Bag;
 import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.api.set.MutableSet;
-import org.eclipse.collections.impl.block.factory.primitive.IntPredicates;
 import org.eclipse.collections.impl.factory.Sets;
 import org.junit.Assert;
 import org.junit.Test;
@@ -30,8 +29,12 @@ public class CandyKataTest
         Bag<Candy> bigBagOfCandy = bagsOfCandy.flatCollect(bag -> bag).toBag();
 
         // Hint: Find the top occurrence in the bag and convert that to a set.
-        // TODO: groupbyでやる？試行錯誤中
-        MutableSet<Candy> mostCommon = bigBagOfCandy.selectByOccurrences(IntPredicates.equal(1)).toSet();
+        // 最大値となるPair(candy.name, count)を取得し、Candyに変換した後、Setにする
+        MutableSet<Candy> mostCommon = bigBagOfCandy
+                .countBy(Candy::name)
+                .topOccurrences(1)
+                .collect(c -> Candy.valueOf(c.getOne()))
+                .toSet();
         Assert.assertEquals(
                 Sets.mutable.with(Candy.REESES_PIECES),
                 mostCommon);
