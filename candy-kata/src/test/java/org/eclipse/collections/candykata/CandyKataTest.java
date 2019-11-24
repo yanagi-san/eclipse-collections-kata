@@ -10,21 +10,9 @@
 
 package org.eclipse.collections.candykata;
 
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Month;
-import java.time.ZoneId;
-import java.util.Random;
-import java.util.stream.IntStream;
-
 import org.eclipse.collections.api.bag.Bag;
 import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.api.set.MutableSet;
-import org.eclipse.collections.api.tuple.primitive.ObjectIntPair;
-import org.eclipse.collections.impl.collector.Collectors2;
-import org.eclipse.collections.impl.factory.Lists;
 import org.eclipse.collections.impl.factory.Sets;
 import org.junit.Assert;
 import org.junit.Test;
@@ -37,10 +25,16 @@ public class CandyKataTest
         MutableList<Bag<Candy>> bagsOfCandy = this.collectBagsOfCandy();
 
         // Hint: Flatten the Bags of Candy into a single Bag
-        Bag<Candy> bigBagOfCandy = null;
+        // list -> bagのデータをフラットなbagに変換
+        Bag<Candy> bigBagOfCandy = bagsOfCandy.flatCollect(bag -> bag).toBag();
 
         // Hint: Find the top occurrence in the bag and convert that to a set.
-        MutableSet<Candy> mostCommon = null;
+        // 最大値となるPair(candy.name, count)を取得し、Candyに変換した後、Setにする
+        MutableSet<Candy> mostCommon = bigBagOfCandy
+                .countBy(Candy::name)
+                .topOccurrences(1)
+                .collect(c -> Candy.valueOf(c.getOne()))
+                .toSet();
         Assert.assertEquals(
                 Sets.mutable.with(Candy.REESES_PIECES),
                 mostCommon);
